@@ -1,5 +1,5 @@
 """
-Askly — Centralized Configuration
+QueryDesk — Centralized Configuration
 All settings loaded from environment variables via Pydantic Settings.
 """
 from functools import lru_cache
@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     # ── Pinecone ──────────────────────────────
     pinecone_api_key: str = Field(..., description="Pinecone API key")
     pinecone_index_name: str = Field(
-        default="askly-index", description="Pinecone index name"
+        default="QueryDesk-index", description="Pinecone index name"
     )
     pinecone_environment: str = Field(
         default="us-east-1", description="Pinecone environment/region"

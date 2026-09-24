@@ -1,5 +1,5 @@
 """
-Askly — Document Ingestion Pipeline
+QueryDesk — Document Ingestion Pipeline
 Orchestrates: Parse → Chunk → Embed → Store (Pinecone + BM25)
 """
 from __future__ import annotations
@@ -9,19 +9,19 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 
-from askly.config import settings
-from askly.core.ingestion.chunker import DocumentChunker
-from askly.core.ingestion.gemini_embedder import GeminiEmbedder
-from askly.core.ingestion.pinecone_embedder import PineconeEmbedder
-from askly.core.ingestion.parser import DocumentParser
-from askly.core.retrieval.bm25_store import BM25Store
-from askly.core.retrieval.pinecone_store import PineconeStore
-from askly.models.schemas import (
+from QueryDesk.config import settings
+from QueryDesk.core.ingestion.chunker import DocumentChunker
+from QueryDesk.core.ingestion.gemini_embedder import GeminiEmbedder
+from QueryDesk.core.ingestion.pinecone_embedder import PineconeEmbedder
+from QueryDesk.core.ingestion.parser import DocumentParser
+from QueryDesk.core.retrieval.bm25_store import BM25Store
+from QueryDesk.core.retrieval.pinecone_store import PineconeStore
+from QueryDesk.models.schemas import (
     DocumentRecord,
     DocumentStatus,
     DocumentUploadResult,
 )
-from askly.utils.logger import logger
+from QueryDesk.utils.logger import logger
 
 REGISTRY_PATH = Path(".data/document_registry.json")
 

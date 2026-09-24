@@ -1,5 +1,5 @@
 """
-Askly — Feedback Manager
+QueryDesk — Feedback Manager
 Persists user feedback (thumbs up/down) on AI answers to disk.
 Provides analytics aggregation for the dashboard.
 """
@@ -10,8 +10,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from askly.models.schemas import FeedbackRecord, FeedbackType
-from askly.utils.logger import logger
+from QueryDesk.models.schemas import FeedbackRecord, FeedbackType
+from QueryDesk.utils.logger import logger
 
 FEEDBACK_PATH = Path("data/feedback.json")
 

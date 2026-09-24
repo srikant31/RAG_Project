@@ -1,8 +1,8 @@
-# Askly System Architecture
+# QueryDesk System Architecture
 
 ## Overview
 
-Askly is an AI-powered enterprise intelligence platform designed to transform static documentation into an interactive knowledge base. It indexes PDF and Markdown files using a high-fidelity **Hybrid Search** strategy (BM25 lexical + Pinecone semantic), uses **LlamaIndex QueryFusionRetriever** to merge results with **Reciprocal Rank Fusion (RRF)**, and generates context-grounded answers using **Gemini**.
+QueryDesk is an AI-powered enterprise intelligence platform designed to transform static documentation into an interactive knowledge base. It indexes PDF and Markdown files using a high-fidelity **Hybrid Search** strategy (BM25 lexical + Pinecone semantic), uses **LlamaIndex QueryFusionRetriever** to merge results with **Reciprocal Rank Fusion (RRF)**, and generates context-grounded answers using **Gemini**.
 
 Embeddings are generated using either **Pinecone** (default, free tier) or **Gemini** (configurable), both at 1024 dimensions for seamless switching.
 
@@ -88,7 +88,7 @@ sequenceDiagram
 
 ## Retrieval & Scoring Pipeline
 
-Askly uses a multi-stage pipeline to ensure the most relevant documentation is always retrieved:
+QueryDesk uses a multi-stage pipeline to ensure the most relevant documentation is always retrieved:
 
 ```
 User Query
@@ -123,17 +123,17 @@ Context Grounding
 | Component | File | Responsibility |
 |---|---|---|
 | Main App | `streamlit/app.py` | State management, UI rendering, and service routing. |
-| IngestionPipeline | `askly/core/ingestion/pipeline.py` | Handles PDF parsing, chunking, and dual-indexing. |
-| PineconeEmbedder | `askly/core/ingestion/pinecone_embedder.py` | Generates embeddings using Pinecone's inference API (default). |
-| GeminiEmbedder | `askly/core/ingestion/gemini_embedder.py` | Generates embeddings using Gemini's API (configurable). |
-| HybridRetriever | `askly/core/retrieval/hybrid.py` | Uses LlamaIndex to orchestrate RRF fusion across Pinecone and BM25 retrievers. |
-| RAGGenerator | `askly/core/generation/generator.py` | Uses a LlamaIndex RetrieverQueryEngine for prompt synthesis, streaming output, and source extraction. |
-| RAGASEvaluator | `askly/core/evaluation/ragas_eval.py` | Scores responses using full RAGAS library, falling back to Gemini judge, then heuristic. Returns typed `AnalyticsSummary`. |
-| FeedbackManager | `askly/core/feedback/manager.py` | Persists user 👍/👎 ratings and comments. |
-| SessionManager | `askly/core/conversation/session.py` | Persists conversation turns to disk as JSON. Recent sessions loaded on startup and surfaced in sidebar for switching. |
-| PineconeStore | `askly/core/retrieval/pinecone_store.py` | Cloud vector database interface with auto-cleanup on index recreate. |
-| BM25Store | `askly/core/retrieval/bm25_store.py` | Persistent local lexical index + chunk explorer. |
-| Config | `askly/config.py` | Pydantic validation for environment secrets, including embedder selection. |
+| IngestionPipeline | `QueryDesk/core/ingestion/pipeline.py` | Handles PDF parsing, chunking, and dual-indexing. |
+| PineconeEmbedder | `QueryDesk/core/ingestion/pinecone_embedder.py` | Generates embeddings using Pinecone's inference API (default). |
+| GeminiEmbedder | `QueryDesk/core/ingestion/gemini_embedder.py` | Generates embeddings using Gemini's API (configurable). |
+| HybridRetriever | `QueryDesk/core/retrieval/hybrid.py` | Uses LlamaIndex to orchestrate RRF fusion across Pinecone and BM25 retrievers. |
+| RAGGenerator | `QueryDesk/core/generation/generator.py` | Uses a LlamaIndex RetrieverQueryEngine for prompt synthesis, streaming output, and source extraction. |
+| RAGASEvaluator | `QueryDesk/core/evaluation/ragas_eval.py` | Scores responses using full RAGAS library, falling back to Gemini judge, then heuristic. Returns typed `AnalyticsSummary`. |
+| FeedbackManager | `QueryDesk/core/feedback/manager.py` | Persists user 👍/👎 ratings and comments. |
+| SessionManager | `QueryDesk/core/conversation/session.py` | Persists conversation turns to disk as JSON. Recent sessions loaded on startup and surfaced in sidebar for switching. |
+| PineconeStore | `QueryDesk/core/retrieval/pinecone_store.py` | Cloud vector database interface with auto-cleanup on index recreate. |
+| BM25Store | `QueryDesk/core/retrieval/bm25_store.py` | Persistent local lexical index + chunk explorer. |
+| Config | `QueryDesk/config.py` | Pydantic validation for environment secrets, including embedder selection. |
 
 ---
 
@@ -154,7 +154,7 @@ On application launch, `get_services()`:
 
 ## Quality Suite (RAGAS)
 
-Askly implements a three-tier evaluation strategy for continuous quality tracking:
+QueryDesk implements a three-tier evaluation strategy for continuous quality tracking:
 
 1. **Full RAGAS** (primary) — uses the `ragas` library with `faithfulness` and `answer_relevancy` metrics scored against retrieved context.
 2. **Gemini Judge via Langchain** (fallback) — if the ragas library fails, uses Langchain wrappers (`LangchainLLMWrapper`, `LangchainEmbeddingsWrapper`) with `langchain-google-genai` to score the answer via Gemini.
@@ -188,7 +188,7 @@ This creates a continuous improvement loop: low-satisfaction answers highlight d
 
 ## Streaming Architecture
 
-Askly streams answers via LlamaIndex `RetrieverQueryEngine` backed by a custom `GoogleGenAILlamaLLM` adapter:
+QueryDesk streams answers via LlamaIndex `RetrieverQueryEngine` backed by a custom `GoogleGenAILlamaLLM` adapter:
 
 1. **Retrieval** completes first via `HybridRetriever` — sources shown immediately.
 2. **Conversational Check** — if no relevant chunks are found (score < 0.3), the system switches to conversational mode using the LLM directly for natural responses (e.g., greetings).

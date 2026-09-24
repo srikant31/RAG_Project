@@ -1,5 +1,5 @@
 """
-Askly — Pydantic Data Models
+QueryDesk — Pydantic Data Models
 All domain schemas used across the application.
 """
 from __future__ import annotations

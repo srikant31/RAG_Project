@@ -1,5 +1,5 @@
 """
-Askly — Pinecone Vector Store
+QueryDesk — Pinecone Vector Store
 Handles upsert and dense retrieval via Pinecone free-tier serverless.
 """
 from __future__ import annotations
@@ -10,9 +10,9 @@ from typing import Optional
 from pinecone import Pinecone, ServerlessSpec
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from askly.config import settings
-from askly.models.schemas import DocumentChunk, RetrievedChunk
-from askly.utils.logger import logger
+from QueryDesk.config import settings
+from QueryDesk.models.schemas import DocumentChunk, RetrievedChunk
+from QueryDesk.utils.logger import logger
 
 REGISTRY_PATH = Path(".data/document_registry.json")
 BM25_STORE_PATH = Path(".data/bm25_store.pkl")

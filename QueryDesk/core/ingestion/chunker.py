@@ -1,5 +1,5 @@
 """
-Askly — Semantic Chunker
+QueryDesk — Semantic Chunker
 Splits parsed document pages/sections into overlapping chunks
 suitable for embedding and retrieval.
 """
@@ -8,9 +8,9 @@ from __future__ import annotations
 import uuid
 from typing import Optional
 
-from askly.config import settings
-from askly.models.schemas import DocumentChunk
-from askly.utils.logger import logger
+from QueryDesk.config import settings
+from QueryDesk.models.schemas import DocumentChunk
+from QueryDesk.utils.logger import logger
 
 
 class DocumentChunker:

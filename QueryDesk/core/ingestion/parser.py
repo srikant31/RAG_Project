@@ -1,5 +1,5 @@
 """
-Askly — Document Parser
+QueryDesk — Document Parser
 Handles PDF and Markdown file parsing with robust error handling.
 """
 from __future__ import annotations
@@ -11,7 +11,7 @@ from typing import Optional
 import fitz  # PyMuPDF
 import markdown
 
-from askly.utils.logger import logger
+from QueryDesk.utils.logger import logger
 
 
 class DocumentParser:

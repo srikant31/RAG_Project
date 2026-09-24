@@ -1,5 +1,5 @@
 """
-Askly - LlamaIndex-backed response synthesis and query engine.
+QueryDesk - LlamaIndex-backed response synthesis and query engine.
 
 Retrieval orchestration is handled by the LlamaIndex fusion retriever, while
 response synthesis is now also delegated to a LlamaIndex RetrieverQueryEngine
@@ -20,12 +20,12 @@ from llama_index.core.llms.custom import CustomLLM
 from llama_index.core.query_engine import RetrieverQueryEngine
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from askly.config import settings
-from askly.core.retrieval.hybrid import HybridRetriever
-from askly.models.schemas import RetrievedChunk, SourceReference
-from askly.utils.logger import logger
+from QueryDesk.config import settings
+from QueryDesk.core.retrieval.hybrid import HybridRetriever
+from QueryDesk.models.schemas import RetrievedChunk, SourceReference
+from QueryDesk.utils.logger import logger
 
-SYSTEM_PROMPT = """You are Askly, an intelligent enterprise helpdesk assistant.
+SYSTEM_PROMPT = """You are QueryDesk, an intelligent enterprise helpdesk assistant.
 Your role is to answer questions accurately based ONLY on the provided enterprise documentation.
 
 Guidelines:
@@ -122,7 +122,7 @@ class GoogleGenAILlamaLLM(CustomLLM):
 
 class RAGGenerator:
     """
-    LlamaIndex-based response synthesis over Askly's hybrid retriever.
+    LlamaIndex-based response synthesis over QueryDesk's hybrid retriever.
 
     Retrieval is performed by HybridRetriever's fusion retriever. Answer
     synthesis is handled by LlamaIndex RetrieverQueryEngine with a custom
@@ -142,7 +142,7 @@ class RAGGenerator:
             return "No previous messages."
         lines = []
         for turn in chat_history[-6:]:
-            role = "User" if turn["role"] == "user" else "Askly"
+            role = "User" if turn["role"] == "user" else "QueryDesk"
             lines.append(f"{role}: {turn['content']}")
         return "\n".join(lines)
 
@@ -414,7 +414,7 @@ class RAGGenerator:
     def _generate_conversational(self, query: str, chat_history: list[dict]) -> tuple[str, list[SourceReference], list[str]]:
         """Handle conversational queries when no relevant documents are found."""
         conversational_prompt = (
-            "You are Askly, a helpful enterprise helpdesk assistant. "
+            "You are QueryDesk, a helpful enterprise helpdesk assistant. "
             "The user has asked a question that doesn't match any documentation. "
             "Respond naturally and helpfully. If it's a greeting, respond warmly. "
             "If it's unclear what they want, ask clarifying questions about documentation topics. "

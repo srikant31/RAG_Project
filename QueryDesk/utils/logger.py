@@ -1,5 +1,5 @@
 """
-Askly — Centralized Logger
+QueryDesk — Centralized Logger
 Uses loguru for structured, colourful, enterprise-grade logging.
 """
 import sys
@@ -23,7 +23,7 @@ logger.add(
 
 # File handler — JSON-structured for production log aggregators
 logger.add(
-    "logs/askly.log",
+    "logs/QueryDesk.log",
     format="{time} | {level} | {name}:{function}:{line} | {message}",
     level="DEBUG",
     rotation="10 MB",

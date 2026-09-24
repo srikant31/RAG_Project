@@ -1,5 +1,5 @@
 """
-Askly — Gemini Embedder
+QueryDesk — Gemini Embedder
 Generates embeddings using gemini-embedding-001 via google-genai SDK.
 Includes retry logic and batch processing for reliability.
 """
@@ -14,9 +14,9 @@ from tenacity import (
     retry_if_exception_type,
 )
 
-from askly.config import settings
-from askly.models.schemas import DocumentChunk
-from askly.utils.logger import logger
+from QueryDesk.config import settings
+from QueryDesk.models.schemas import DocumentChunk
+from QueryDesk.utils.logger import logger
 
 
 class GeminiEmbedder:

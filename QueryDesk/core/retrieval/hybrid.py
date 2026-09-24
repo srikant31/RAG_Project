@@ -1,7 +1,7 @@
 """
-Askly - LlamaIndex-backed hybrid retrieval orchestration.
+QueryDesk - LlamaIndex-backed hybrid retrieval orchestration.
 
-Dense Pinecone retrieval and sparse BM25 retrieval remain backed by Askly's
+Dense Pinecone retrieval and sparse BM25 retrieval remain backed by QueryDesk's
 existing stores, while LlamaIndex handles reciprocal-rank fusion.
 """
 from __future__ import annotations
@@ -15,17 +15,17 @@ from llama_index.core.retrievers import QueryFusionRetriever
 from llama_index.core.retrievers.fusion_retriever import FUSION_MODES
 from llama_index.core.schema import NodeWithScore, QueryBundle, TextNode
 
-from askly.config import settings
-from askly.core.ingestion.gemini_embedder import GeminiEmbedder
-from askly.core.ingestion.pinecone_embedder import PineconeEmbedder
-from askly.core.retrieval.bm25_store import BM25Store
-from askly.core.retrieval.pinecone_store import PineconeStore
-from askly.models.schemas import RetrievedChunk, RetrievalResult
-from askly.utils.logger import logger
+from QueryDesk.config import settings
+from QueryDesk.core.ingestion.gemini_embedder import GeminiEmbedder
+from QueryDesk.core.ingestion.pinecone_embedder import PineconeEmbedder
+from QueryDesk.core.retrieval.bm25_store import BM25Store
+from QueryDesk.core.retrieval.pinecone_store import PineconeStore
+from QueryDesk.models.schemas import RetrievedChunk, RetrievalResult
+from QueryDesk.utils.logger import logger
 
 
 class _DensePineconeRetriever(BaseRetriever):
-    """LlamaIndex retriever adapter for Askly's Pinecone store."""
+    """LlamaIndex retriever adapter for QueryDesk's Pinecone store."""
 
     def __init__(
         self,
@@ -45,7 +45,7 @@ class _DensePineconeRetriever(BaseRetriever):
 
 
 class _SparseBM25Retriever(BaseRetriever):
-    """LlamaIndex retriever adapter for Askly's BM25 store."""
+    """LlamaIndex retriever adapter for QueryDesk's BM25 store."""
 
     def __init__(self, bm25_store: BM25Store, top_k: int) -> None:
         super().__init__()
@@ -93,7 +93,7 @@ class HybridRetriever:
     """
     LlamaIndex-powered hybrid retrieval.
 
-    Askly's storage/indexing stays the same, but retrieval orchestration is now
+    QueryDesk's storage/indexing stays the same, but retrieval orchestration is now
     delegated to LlamaIndex QueryFusionRetriever using reciprocal-rank fusion.
     """
 
@@ -140,7 +140,7 @@ class HybridRetriever:
         query: str,
         top_k: Optional[int] = None,
     ) -> RetrievalResult:
-        """Execute hybrid retrieval and return Askly's existing result schema."""
+        """Execute hybrid retrieval and return QueryDesk's existing result schema."""
         k = top_k or settings.top_k_results
         start_time = time.time()
 

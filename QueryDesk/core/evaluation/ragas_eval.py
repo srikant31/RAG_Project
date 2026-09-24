@@ -1,5 +1,5 @@
 """
-Askly — RAGAS Evaluation Engine
+QueryDesk — RAGAS Evaluation Engine
 Asynchronously scores RAG answers for quality tracking.
 Metrics: Faithfulness, Answer Relevancy, Context Precision
 """
@@ -13,9 +13,9 @@ from typing import Optional
 
 import nest_asyncio
 
-from askly.config import settings
-from askly.models.schemas import RAGASScore, RetrievedChunk
-from askly.utils.logger import logger
+from QueryDesk.config import settings
+from QueryDesk.models.schemas import RAGASScore, RetrievedChunk
+from QueryDesk.utils.logger import logger
 
 SCORES_PATH = Path("data/ragas_scores.json")
 
@@ -273,7 +273,7 @@ Return ONLY a JSON object like this:
 
     def get_analytics(self) -> dict:
         """Return aggregated analytics from all scored responses."""
-        from askly.models.schemas import AnalyticsSummary
+        from QueryDesk.models.schemas import AnalyticsSummary
         if not self._scores_log:
             summary = AnalyticsSummary()
             return summary.model_dump()

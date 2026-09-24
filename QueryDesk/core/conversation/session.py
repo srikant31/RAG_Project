@@ -1,5 +1,5 @@
 """
-Askly — Conversation Session Manager
+QueryDesk — Conversation Session Manager
 Manages multi-turn chat history per session in memory.
 Persists sessions to disk for restart survival.
 """
@@ -11,8 +11,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from askly.models.schemas import ChatMessage, ChatSession, MessageRole
-from askly.utils.logger import logger
+from QueryDesk.models.schemas import ChatMessage, ChatSession, MessageRole
+from QueryDesk.utils.logger import logger
 
 SESSIONS_PATH = Path("data/sessions")
 

@@ -40,7 +40,7 @@ GEMINI_API_KEY=your_gemini_api_key_here
 GEMINI_LLM_MODEL=gemini-2.5-flash
 GEMINI_EMBEDDING_MODEL=gemini-embedding-2-preview
 PINECONE_API_KEY=your_pinecone_api_key_here
-PINECONE_INDEX_NAME=askly-index
+PINECONE_INDEX_NAME=QueryDesk-index
 PINECONE_ENVIRONMENT=us-east-1
 PINECONE_EMBEDDING_MODEL=llama-text-embed-v2
 PINECONE_EMBEDDING_ENABLED=true
@@ -58,7 +58,7 @@ RAGAS_GEMINI_ENABLED=false
 - `GEMINI_LLM_MODEL`: Gemini model for generation (default: gemini-2.5-flash)
 - `GEMINI_EMBEDDING_MODEL`: Gemini model for embeddings (default: gemini-embedding-2-preview)
 - `PINECONE_API_KEY`: Pinecone API key for vector database
-- `PINECONE_INDEX_NAME`: Name of your Pinecone index (default: askly-index)
+- `PINECONE_INDEX_NAME`: Name of your Pinecone index (default: QueryDesk-index)
 - `PINECONE_ENVIRONMENT`: Pinecone region (default: us-east-1)
 - `PINECONE_EMBEDDING_MODEL`: Pinecone embedding model (default: llama-text-embed-v2)
 - `PINECONE_EMBEDDING_ENABLED`: Use Pinecone for embeddings instead of Gemini (default: true)
@@ -77,7 +77,7 @@ RAGAS_GEMINI_ENABLED=false
 ### 🧪 Feature 1 — Document Ingestion
 In the **Sources** panel:
 1. Upload PDF or Markdown files (e.g., Company Policies, Onboarding Guides).
-2. Askly's **Ingestion Pipeline** will:
+2. QueryDesk's **Ingestion Pipeline** will:
     - Parse text with PyMuPDF.
     - Chunk content into 512-word sliding windows.
     - Embed chunks using Pinecone or Gemini embedder (configurable).
@@ -96,7 +96,7 @@ In the **Ask** panel:
 ---
 
 ### ⚡ Feature 3 — Streaming Context-Grounded Generation
-Askly streams answers in real-time using a LlamaIndex query engine backed by Gemini:
+QueryDesk streams answers in real-time using a LlamaIndex query engine backed by Gemini:
 - **Real-time tokens:** Answers appear word-by-word (~200ms first token).
 - **Source Citations:** Every answer displays source tiles showing document name, rank, relevance score, and page number.
 - **Follow-up Suggestions:** AI generates 2-3 clickable follow-up question chips.
@@ -164,10 +164,10 @@ A dedicated **Recents** page to manage conversation history:
 <summary>Click to expand</summary>
 
 ```
-askly/
+QueryDesk/
 ├── streamlit/
 │   └── app.py                      # Main Entry Point (Geist UI + Controller)
-├── askly/
+├── QueryDesk/
 │   ├── core/
 │   │   ├── retrieval/              # Hybrid Search (BM25 + Pinecone)
 │   │   │   ├── bm25_store.py       # BM25 lexical search

@@ -1,5 +1,5 @@
 """
-Askly — BM25 Sparse Retrieval Store
+QueryDesk — BM25 Sparse Retrieval Store
 In-memory BM25 index for keyword-based sparse retrieval.
 Persists corpus to disk for survival across restarts.
 """
@@ -12,9 +12,9 @@ from typing import Optional
 
 from rank_bm25 import BM25Okapi
 
-from askly.config import settings
-from askly.models.schemas import DocumentChunk, RetrievedChunk
-from askly.utils.logger import logger
+from QueryDesk.config import settings
+from QueryDesk.models.schemas import DocumentChunk, RetrievedChunk
+from QueryDesk.utils.logger import logger
 
 BM25_STORE_PATH = Path(".data/bm25_store.pkl")
 CORPUS_META_PATH = Path(".data/bm25_corpus_meta.json")

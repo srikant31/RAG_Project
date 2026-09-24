@@ -10,23 +10,23 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from askly.config import settings
-from askly.core.conversation.session import SessionManager
-from askly.core.evaluation.ragas_eval import RAGASEvaluator
-from askly.core.feedback.manager import FeedbackManager
-from askly.core.generation.generator import RAGGenerator
-from askly.core.ingestion.pipeline import IngestionPipeline
-from askly.core.retrieval.bm25_store import BM25Store
-from askly.core.retrieval.hybrid import HybridRetriever
-from askly.core.retrieval.pinecone_store import PineconeStore
-from askly.core.ingestion.gemini_embedder import GeminiEmbedder
-from askly.models.schemas import ChatMessage, MessageRole, SourceReference
-from askly.utils.logger import logger
+from QueryDesk.config import settings
+from QueryDesk.core.conversation.session import SessionManager
+from QueryDesk.core.evaluation.ragas_eval import RAGASEvaluator
+from QueryDesk.core.feedback.manager import FeedbackManager
+from QueryDesk.core.generation.generator import RAGGenerator
+from QueryDesk.core.ingestion.pipeline import IngestionPipeline
+from QueryDesk.core.retrieval.bm25_store import BM25Store
+from QueryDesk.core.retrieval.hybrid import HybridRetriever
+from QueryDesk.core.retrieval.pinecone_store import PineconeStore
+from QueryDesk.core.ingestion.gemini_embedder import GeminiEmbedder
+from QueryDesk.models.schemas import ChatMessage, MessageRole, SourceReference
+from QueryDesk.utils.logger import logger
 
 # ── Page Config ───────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="Askly",
-    page_icon="🔷",
+    page_title="QueryDesk",
+    page_icon="◈",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -37,36 +37,43 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,200..700;1,9..40,200..700&family=DM+Mono:wght@300;400;500&display=swap');
 
 :root {
-    --bg:          #050507;
-    --s1:          #0d0d10;
-    --s2:          #141418;
-    --s3:          #1c1c22;
-    --b0:          rgba(255,255,255,0.05);
-    --b1:          rgba(255,255,255,0.09);
-    --t1:          #f2f2f5;
-    --t2:          #8b8b99;
-    --t3:          #45454f;
-    --accent:      #6c63ff;
-    --ac-lo:       rgba(108,99,255,0.10);
-    --ac-glow:     rgba(108,99,255,0.20);
-    --green:       #34d399;
-    --green-lo:    rgba(52,211,153,0.07);
-    --red:         #f87171;
-    --amber:       #fbbf24;
-    --amber-lo:    rgba(251,191,36,0.07);
-    --cyan:        #22d3ee;
-    --cyan-lo:     rgba(34,211,238,0.07);
+    --bg:          #F1EDE6;   /* soft warm cream — less clinical than pure white */
+    --s1:          #EAE4D9;   /* sidebar — warm tint, subtle separation from bg */
+    --s2:          #F8F5F0;   /* card surface — soft off-white, not stark white */
+    --s3:          #E5DDD0;   /* hover state — warm wash */
+    --b0:          rgba(22,51,58,0.06);
+    --b1:          rgba(22,51,58,0.13);
+    --t1:          #16333A;   /* primary text — dark teal, from your darkest swatch */
+    --t2:          #55625F;   /* secondary text — warmed slightly to match new bg */
+    --t3:          #8C8F84;   /* tertiary text / placeholders — warmed */
+    --accent:      #3E7472;   /* primary accent — deepened for contrast on light bg */
+    --accent-soft: #88BDBC;   /* your original lighter teal — soft fills only, not text/buttons */
+    --accent-dark: #2A5654;   /* hover state */
+    --ac-lo:       rgba(62,116,114,0.10);
+    --ac-glow:     rgba(62,116,114,0.20);
+    --green:       #059669;   /* deepened from standard green for contrast on light bg */
+    --green-lo:    rgba(5,150,105,0.09);
+    --red:         #dc2626;   /* deepened from standard red for contrast on light bg */
+    --amber:       #d97706;   /* deepened from standard amber for contrast on light bg */
+    --amber-lo:    rgba(217,119,6,0.09);
+    --cyan:        #3E7472;   /* reuses accent — decorative info tags */
+    --cyan-lo:     rgba(62,116,114,0.08);
+    --warm:        #6E6658;   /* your taupe — reserved, currently unused */
     --r-sm:        8px;
     --r-md:        14px;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html, body, [class*="css"] {
-    font-family: 'DM Sans', sans-serif !important;
-    background: var(--bg) !important;
-    color: var(--t1) !important;
+html, body {
+    font-family: 'DM Sans', sans-serif;
     -webkit-font-smoothing: antialiased;
+}
+
+.stApp {
+    background: var(--bg);
+    color: var(--t1);
+    font-family: 'DM Sans', sans-serif;
 }
 
 /* ── Header Cleanup ── */
@@ -97,49 +104,28 @@ section[data-testid="stSidebar"] {
 [data-testid="stSidebarContent"] { padding: 0 14px 24px !important; }
 [data-testid="stSidebarNav"] { display: none !important; }
 
-.sb-logo {
-    display: flex; align-items: center; gap: 10px;
-    padding: 0px 2px 18px;
-    border-bottom: 1px solid var(--b0); margin-bottom: 20px;
-}
-.sb-mark {
-    width: 30px; height: 30px; background: var(--accent);
-    border-radius: 8px; display: flex; align-items: center; justify-content: center;
-    font-size: 14px; font-weight: 900; color: white;
-    box-shadow: 0 0 16px var(--ac-glow); flex-shrink: 0;
-}
-.sb-name { font-size: 1.1rem; font-weight: 700; color: var(--t1); letter-spacing: -0.03em; }
 .sb-lbl {
     font-size: 0.6rem; font-weight: 700; color: var(--t3);
     text-transform: uppercase; letter-spacing: 0.16em;
-    padding: 0 2px 6px; margin-top: 4px;
+    padding: 12px 2px 6px; margin-top: 4px;
 }
-
-/* Radio nav */
-div[role="radiogroup"] { gap: 1px !important; display: flex !important; flex-direction: column !important; }
-div[role="radiogroup"] > label {
-    display: flex !important; align-items: center !important;
-    padding: 9px 10px !important; border-radius: var(--r-sm) !important;
-    color: var(--t2) !important; font-size: 0.855rem !important;
-    font-weight: 500 !important; cursor: pointer !important;
-    transition: background 0.12s, color 0.12s !important; line-height: 1 !important;
-}
-div[role="radiogroup"] > label:hover { background: var(--s2) !important; color: var(--t1) !important; }
-div[role="radiogroup"] > label:has(input:checked) { background: var(--s2) !important; color: var(--t1) !important; font-weight: 600 !important; }
-div[role="radiogroup"] input[type="radio"] { width: 0 !important; height: 0 !important; margin: 0 !important; padding: 0 !important; opacity: 0 !important; position: absolute !important; }
 
 /* Sidebar buttons */
 section[data-testid="stSidebar"] .stButton > button {
     font-family: 'DM Sans', sans-serif !important;
     font-size: 0.82rem !important; font-weight: 600 !important;
     color: var(--t1) !important; background: var(--ac-lo) !important;
-    border: 1px solid rgba(108,99,255,0.22) !important;
+    border: 1px solid rgba(136,189,188,0.22) !important;
     border-radius: var(--r-sm) !important;
     padding: 9px 14px !important; width: 100% !important;
     transition: all 0.14s !important;
 }
 section[data-testid="stSidebar"] .stButton > button:hover {
     background: var(--accent) !important; border-color: var(--accent) !important; color: white !important;
+}
+section[data-testid="stSidebar"] .stButton > button[kind="primary"] {
+    background: var(--accent) !important; border-color: var(--accent) !important; color: white !important;
+    font-weight: 700 !important;
 }
 
 .model-badge {
@@ -154,7 +140,7 @@ section[data-testid="stSidebar"] .stButton > button:hover {
 .sb-status { padding-top: 14px; border-top: 1px solid var(--b0); margin-top: 14px; }
 .status-pill {
     display: inline-flex; align-items: center; gap: 7px;
-    background: var(--green-lo); border: 1px solid rgba(52,211,153,0.12);
+    background: var(--green-lo); border: 1px solid rgba(5,150,105,0.16);
     border-radius: 99px; padding: 5px 11px;
     font-size: 0.68rem; font-weight: 600; color: var(--green);
 }
@@ -168,40 +154,39 @@ section[data-testid="stSidebar"] .stButton > button:hover {
 /* ════════════════════════════════════════
    CHAT INPUT
 ════════════════════════════════════════ */
-[data-testid="stChatInputContainer"] {
+[data-testid*="ChatInput"],
+[data-testid*="Bottom"] {
     background: var(--bg) !important;
     border-top: 1px solid var(--b0) !important;
-    padding: 14px 2.5rem 20px !important;
-    max-width: 860px !important;
-    margin: 0 auto !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: calc(100% - 240px) !important;
 }
-div[data-testid="stChatInput"] {
+.stChatInput,
+.stChatInput > div,
+.stChatInput [data-baseweb="base-input"],
+.stChatInput [data-baseweb="textarea"] {
     background: var(--s2) !important; border: 1px solid var(--b1) !important;
     border-radius: var(--r-md) !important; box-shadow: none !important;
     transition: border-color 0.18s, box-shadow 0.18s !important;
 }
-div[data-testid="stChatInput"]:focus-within {
+.stChatInput:focus-within,
+.stChatInput [data-baseweb="base-input"]:focus-within {
     border-color: var(--accent) !important;
     box-shadow: 0 0 0 3px var(--ac-glow) !important;
 }
-div[data-testid="stChatInput"] textarea {
+[data-testid*="ChatInput"] textarea {
     color: var(--t1) !important; font-family: 'DM Sans', sans-serif !important;
     font-size: 0.93rem !important; background: transparent !important;
     outline: none !important; box-shadow: none !important;
     border: none !important; caret-color: var(--accent) !important;
 }
-div[data-testid="stChatInput"] textarea:focus { outline: none !important; box-shadow: none !important; }
-div[data-testid="stChatInput"] textarea::placeholder { color: var(--t3) !important; }
-div[data-testid="stChatInput"] button { background: var(--accent) !important; border-radius: 8px !important; }
+[data-testid*="ChatInput"] textarea:focus { outline: none !important; box-shadow: none !important; }
+[data-testid*="ChatInput"] textarea::placeholder { color: var(--t3) !important; }
+.stChatInput button { background: var(--accent) !important; border-radius: 8px !important; }
 
 /* ════════════════════════════════════════
    MAIN AREA BUTTONS (default)
 ════════════════════════════════════════ */
-section[data-testid="stMain"] .stButton > button,
-.stDownloadButton > button {
+.stButton > button:not(#___spec),
+.stDownloadButton > button:not(#___spec) {
     font-family: 'DM Sans', sans-serif !important;
     font-size: 0.75rem !important; font-weight: 600 !important;
     color: var(--t2) !important; background: var(--s2) !important;
@@ -210,24 +195,22 @@ section[data-testid="stMain"] .stButton > button,
     min-height: 32px !important; line-height: 1 !important;
     display: flex !important; align-items: center !important; justify-content: center !important;
 }
-section[data-testid="stMain"] .stButton > button:hover,
-.stDownloadButton > button:hover {
+.stButton > button:not(#___spec):hover,
+.stDownloadButton > button:not(#___spec):hover {
     color: var(--t1) !important; background: var(--s3) !important;
-    border-color: rgba(255,255,255,0.16) !important;
+    border-color: var(--b1) !important;
 }
-section[data-testid="stMain"] .stButton > button:disabled {
+.stButton > button:not(#___spec):disabled {
     opacity: 0.35 !important; cursor: not-allowed !important;
 }
 
 /* Accent (primary) buttons */
-section[data-testid="stMain"] .stButton > button[kind="primary"],
-section[data-testid="stMain"] .stButton > button[data-testid="stBaseButton-primary"] {
+.stButton > button:not(#___spec)[kind="primary"] {
     color: white !important; background: var(--accent) !important;
     border-color: var(--accent) !important; font-weight: 600 !important;
 }
-section[data-testid="stMain"] .stButton > button[kind="primary"]:hover,
-section[data-testid="stMain"] .stButton > button[data-testid="stBaseButton-primary"]:hover {
-    background: #5a52e0 !important; border-color: #5a52e0 !important; color: white !important;
+.stButton > button:not(#___spec)[kind="primary"]:hover {
+    background: var(--accent-dark) !important; border-color: var(--accent-dark) !important; color: white !important;
 }
 
 /* ════════════════════════════════════════
@@ -237,14 +220,17 @@ section[data-testid="stMain"] .stButton > button[data-testid="stBaseButton-prima
 .stProgress > div > div { background: var(--accent) !important; border-radius: 99px !important; }
 .stProgress + div, [data-testid="stText"] { color: var(--t2) !important; }
 
-[data-testid="stFileUploadDropzone"] {
+[data-testid*="FileUploadDropzone"]:not(#___spec),
+[data-testid*="FileUploader"]:not(#___spec) {
     background: var(--s2) !important;
     border: 1.5px dashed var(--b1) !important;
     border-radius: var(--r-md) !important;
     padding: 24px !important;
 }
-[data-testid="stFileUploadDropzone"] * { color: var(--t2) !important; }
-[data-testid="stFileUploadDropzone"] button {
+[data-testid*="FileUploadDropzone"]:not(#___spec) *,
+[data-testid*="FileUploader"]:not(#___spec) * { color: var(--t2) !important; }
+[data-testid*="FileUploadDropzone"]:not(#___spec) button,
+[data-testid*="FileUploader"]:not(#___spec) button {
     background: var(--s3) !important; color: var(--t1) !important;
     border: 1px solid var(--b1) !important; border-radius: 6px !important;
     font-size: 0.78rem !important;
@@ -254,6 +240,7 @@ section[data-testid="stMain"] .stButton > button[data-testid="stBaseButton-prima
 
 /* Chat messages — strip Streamlit's own chrome */
 [data-testid="stChatMessage"] { background: transparent !important; padding: 0 !important; border: none !important; }
+[data-testid="stChatMessage"] p:not(#___spec) { color: var(--t1) !important; }
 hr { border-color: var(--b0) !important; margin: 24px 0 !important; }
 
 .stAlert {
@@ -273,7 +260,7 @@ div[data-baseweb="notification"] { background: var(--s2) !important; color: var(
 .hero { text-align: center; padding: 68px 24px 36px; }
 .hero-badge {
     display: inline-flex; align-items: center; gap: 7px;
-    background: var(--ac-lo); border: 1px solid rgba(108,99,255,0.18);
+    background: var(--ac-lo); border: 1px solid rgba(136,189,188,0.18);
     border-radius: 99px; padding: 5px 14px;
     font-size: 0.67rem; font-weight: 700; color: var(--accent);
     letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 28px;
@@ -285,8 +272,7 @@ div[data-baseweb="notification"] { background: var(--s2) !important; color: var(
 }
 .hero-h1 em {
     font-style: normal;
-    background: linear-gradient(130deg, #7c74ff 0%, #b09bff 55%, #72b5ff 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    color: var(--accent);
 }
 .hero-sub {
     font-size: 0.975rem; color: var(--t2);
@@ -464,7 +450,7 @@ div[data-testid="stSelectbox"] [data-baseweb="select"] * { color: var(--t1) !imp
 .log-date { font-size: 0.65rem; color: var(--t3); font-family: 'DM Mono', monospace; margin-bottom: 3px; }
 .log-q { font-size: 0.855rem; color: var(--t1); font-weight: 500; }
 .gap-card {
-    background: rgba(248,113,113,0.04); border: 1px solid rgba(248,113,113,0.1);
+    background: rgba(220,38,38,0.05); border: 1px solid rgba(220,38,38,0.14);
     border-radius: var(--r-sm); padding: 11px 14px; margin-bottom: 7px;
 }
 .gap-lbl {
@@ -546,7 +532,7 @@ DOCS_DIR.mkdir(parents=True, exist_ok=True)
 
 def auto_ingest_docs():
     # Check Pinecone for existing documents to avoid re-ingesting on Streamlit Cloud
-    from askly.core.retrieval.pinecone_store import PineconeStore
+    from QueryDesk.core.retrieval.pinecone_store import PineconeStore
     pinecone_store = PineconeStore()
     
     # Get all unique doc names from Pinecone metadata
@@ -698,27 +684,25 @@ def render_sources(sources):
 # SIDEBAR
 # ════════════════════════════════════════
 with st.sidebar:
-    st.markdown("""
-        <div class="sb-logo">
-            <div class="sb-mark">◈</div>
-            <div class="sb-name">Askly</div>
-        </div>
-    """, unsafe_allow_html=True)
-
     st.markdown("<div class='sb-lbl'>Navigation</div>", unsafe_allow_html=True)
-    nav = st.radio(
-        "nav",
-        options=["Ask", "Sources", "Explorer", "Analytics", "Recents"],
-        format_func=lambda x: {
-            "Ask":       "◇  Ask",
-            "Sources":   "⊞  Sources",
-            "Explorer":  "⬡  Explorer",
-            "Analytics": "◎  Analytics",
-            "Recents":   "◷  Recents",
-        }[x],
-        label_visibility="collapsed",
-        key="nav",
-    )
+    nav_options = [
+        ("Ask",       "◇  Ask"),
+        ("Sources",   "⊞  Sources"),
+        ("Explorer",  "⬡  Explorer"),
+        ("Analytics", "◎  Analytics"),
+        ("Recents",   "◷  Recents"),
+    ]
+    for nav_key, nav_label in nav_options:
+        is_active = st.session_state.nav == nav_key
+        if st.button(
+            nav_label,
+            key=f"navbtn_{nav_key}",
+            use_container_width=True,
+            type="primary" if is_active else "secondary",
+        ):
+            st.session_state.nav = nav_key
+            st.rerun()
+    nav = st.session_state.nav
 
     st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
     st.button("＋  New conversation", on_click=reset_chat, use_container_width=True)
@@ -755,7 +739,7 @@ if nav == "Ask":
         st.markdown("""
             <div class="hero">
                 <div class="hero-badge">◈ &nbsp;Powered by Gemini · RAG</div>
-                <div class="hero-h1"><em>Askly</em></div>
+                <div class="hero-h1"><em>QueryDesk</em></div>
                 <div class="hero-sub">Smart HelpDesk Assistant</div>
             </div>
         """, unsafe_allow_html=True)
@@ -777,19 +761,19 @@ if nav == "Ask":
         # Export button
         exp_col, _ = st.columns([1.5, 4.5])
         with exp_col:
-            md_lines = [f"# Askly Conversation\n_Exported {datetime.now().strftime('%Y-%m-%d %H:%M')}_\n---\n"]
+            md_lines = [f"# QueryDesk Conversation\n_Exported {datetime.now().strftime('%Y-%m-%d %H:%M')}_\n---\n"]
             for msg in st.session_state.messages:
                 if msg["role"] == "user":
                     md_lines.append(f"## 🙋 {msg['content']}\n")
                 else:
-                    md_lines.append(f"### 🤖 Askly\n{msg['content']}\n")
+                    md_lines.append(f"### 🤖 QueryDesk\n{msg['content']}\n")
                     for s in msg.get("sources", []):
                         md_lines.append(f"- 📄 {s['name']}")
                     md_lines.append("---\n")
             st.download_button(
                 "📥  Export Chat",
                 data="\n".join(md_lines),
-                file_name=f"askly_chat_{datetime.now().strftime('%Y%m%d_%H%M')}.md",
+                file_name=f"QueryDesk_chat_{datetime.now().strftime('%Y%m%d_%H%M')}.md",
                 mime="text/markdown",
             )
 
@@ -837,7 +821,7 @@ if nav == "Ask":
                         st.download_button(
                             "📋 Copy",
                             data=msg["content"],
-                            file_name="askly_answer.txt",
+                            file_name="QueryDesk_answer.txt",
                             mime="text/plain",
                             key=f"copy_{msg_id}",
                             use_container_width=True,
@@ -1158,7 +1142,7 @@ elif nav == "Analytics":
                 st.markdown("<div class='chart-title'>RAGAS Score Trends Over Queries</div>", unsafe_allow_html=True)
                 st.line_chart(
                     chart_data.set_index("Query #"),
-                    color=["#6c63ff", "#34d399", "#22d3ee"],
+                    color=["#3E7472", "#059669", "#0E7490"],
                     height=300,
                 )
 
@@ -1168,7 +1152,7 @@ elif nav == "Analytics":
                     "Query #": range(1, len(scores_log) + 1),
                     "Overall": [s.get("overall", 0) for s in scores_log],
                 })
-                st.bar_chart(overall_data.set_index("Query #"), color="#6c63ff", height=250)
+                st.bar_chart(overall_data.set_index("Query #"), color="#3E7472", height=250)
             else:
                 st.markdown("""
                     <div class="empty-state" style="padding:40px 0">
