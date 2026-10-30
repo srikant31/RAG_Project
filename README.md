@@ -37,7 +37,7 @@ pip install -r requirements.txt
 Create a `.env` file at the root:
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
-GEMINI_LLM_MODEL=gemini-2.5-flash
+GEMINI_LLM_MODEL=gemini-3.6-flash
 GEMINI_EMBEDDING_MODEL=gemini-embedding-2-preview
 PINECONE_API_KEY=your_pinecone_api_key_here
 PINECONE_INDEX_NAME=QueryDesk-index
@@ -55,7 +55,7 @@ RAGAS_GEMINI_ENABLED=false
 
 **Environment Variables:**
 - `GEMINI_API_KEY`: Google Gemini API key for LLM and embedding
-- `GEMINI_LLM_MODEL`: Gemini model for generation (default: gemini-2.5-flash)
+- `GEMINI_LLM_MODEL`: Gemini model for generation (default: gemini-3.6-flash)
 - `GEMINI_EMBEDDING_MODEL`: Gemini model for embeddings (default: gemini-embedding-2-preview)
 - `PINECONE_API_KEY`: Pinecone API key for vector database
 - `PINECONE_INDEX_NAME`: Name of your Pinecone index (default: QueryDesk-index)

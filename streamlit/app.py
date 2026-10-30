@@ -546,12 +546,20 @@ def auto_ingest_docs():
             include_metadata=True,
             filter={}  # no filter to get all
         )
+        remote_chunks = []
         for match in query_response.get("matches", []):
-            metadata = match.get("metadata", {})
+            metadata = dict(match.get("metadata", {}))
+            metadata["chunk_id"] = match.get("id", "")
+            if metadata.get("content"):
+                remote_chunks.append(metadata)
             doc_name = metadata.get("doc_name")
             if doc_name:
                 pinecone_doc_names.add(doc_name)
         logger.info(f"Found {len(pinecone_doc_names)} documents in Pinecone")
+        # Cloud restarts can discard the local corpus while vectors survive.
+        # Restore keyword retrieval and Explorer before skipping existing docs.
+        if remote_chunks and not bm25_store.get_all_chunks():
+            bm25_store.rebuild_from_pinecone_metadata(remote_chunks)
     except Exception as e:
         logger.warning(f"Failed to query Pinecone for existing docs: {e}")
         # Fallback to local registry if Pinecone query fails
