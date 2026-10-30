@@ -76,6 +76,12 @@ html, body {
     font-family: 'DM Sans', sans-serif;
 }
 
+/* Keep answers readable when a visitor has selected Streamlit's dark theme. */
+[data-testid="stChatMessage"] [data-testid="stMarkdownContainer"],
+[data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] :is(p, li, span, strong, em, h1, h2, h3) {
+    color: var(--t1) !important;
+}
+
 /* ── Header Cleanup ── */
 div[data-testid="stDecoration"] { display: none !important; }
 #MainMenu, footer, .stDeployButton { display: none !important; }
